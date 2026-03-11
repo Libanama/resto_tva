@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Récapitulatif TVA — {{ moisNom }} {{ annee }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">📊 Récapitulatif — {{ moisNom }} {{ annee }}</h1>
+    <form method="get" class="d-flex gap-2">
+        <select name="mois" class="form-select form-select-sm" style="width:140px">
+            {% for num, nom in moisNoms %}
+                <option value="{{ num }}" {% if num == mois %}selected{% endif %}>{{ nom }}</option>
+            {% endfor %}
+        </select>
+        <select name="annee" class="form-select form-select-sm" style="width:100px">
+            {% for a in annee-1..annee+1 %}
+                <option value="{{ a }}" {% if a == annee %}selected{% endif %}>{{ a }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+    </form>
+</div>
+
+{# Cartes TVA collectée #}
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100" style="border-left: 4px solid #10b981 !important;">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Taux 5,5% — Pain, eau</div>
+                <div class="fw-bold">CA TTC : {{ ca55|number_format(2, ',', ' ') }} €</div>
+                <div class="fs-5 fw-bold text-success">TVA : {{ tva55|number_format(2, ',', ' ') }} €</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100" style="border-left: 4px solid #42C5F5 !important;">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Taux 10% — Repas, softs</div>
+                <div class="fw-bold">CA TTC : {{ ca10|number_format(2, ',', ' ') }} €</div>
+                <div class="fs-5 fw-bold" style="color:#42C5F5">TVA : {{ tva10|number_format(2, ',', ' ') }} €</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100" style="border-left: 4px solid #ef4444 !important;">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Taux 20% — Alcool</div>
+                <div class="fw-bold">CA TTC : {{ ca20|number_format(2, ',', ' ') }} €</div>
+                <div class="fs-5 fw-bold text-danger">TVA : {{ tva20|number_format(2, ',', ' ') }} €</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Tableau récapitulatif #}
+<div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+        <i class="bi bi-calculator"></i> Déclaration CA3 — {{ moisNom }} {{ annee }}
+        <span class="float-end text-muted small">{{ nbRecettes }} jour(s) · {{ nbAchats }} achat(s)</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <tbody>
+                <tr>
+                    <td class="ps-4">Chiffre d'affaires TTC total</td>
+                    <td class="text-end pe-4 fw-bold">{{ caTTC|number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr>
+                    <td class="ps-4 text-muted">dont TVA collectée totale</td>
+                    <td class="text-end pe-4 text-warning fw-bold">{{ tvaColl|number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr>
+                    <td class="ps-4 text-muted">CA HT (= CA TTC − TVA collectée)</td>
+                    <td class="text-end pe-4 text-muted">{{ caHT|number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr><td colspan="2" class="p-0"><hr class="m-0"></td></tr>
+                <tr>
+                <td class="ps-4" style="color:#8b5cf6">
+                    <i class="bi bi-coin"></i> Pourboires du mois
+                    <small class="text-muted">— Non soumis à TVA</small>
+                        </td>
+                        <td class="text-end pe-4 fw-bold" style="color:#8b5cf6">{{ totalPourboires|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                    <tr><td colspan="2" class="p-0"><hr class="m-0"></td></tr>
+                    <tr>
+                    <td class="ps-4 text-success">TVA déductible (sur achats)</td>
+                         <td class="text-end pe-4 text-success fw-bold">{{ tvaDed|number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr><td colspan="2" class="p-0"><hr class="m-0"></td></tr>
+                <tr class="{% if tvaNet >= 0 %}table-danger{% else %}table-success{% endif %}">
+                    <td class="ps-4 fw-bold fs-5">
+                        {% if tvaNet >= 0 %}
+                            🔴 TVA nette à reverser à l'État
+                        {% else %}
+                            🟢 Crédit de TVA
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-4 fw-bold fs-4">
+                        {{ tvaNet|abs|number_format(2, ',', ' ') }} €
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Formule #}
+<div class="alert alert-secondary text-center">
+    TVA à reverser = TVA collectée ({{ tvaColl|number_format(2, ',', ' ') }} €)
+    − TVA déductible ({{ tvaDed|number_format(2, ',', ' ') }} €)
+    = <strong>{{ tvaNet|number_format(2, ',', ' ') }} €</strong>
+</div>
+{% endblock %}

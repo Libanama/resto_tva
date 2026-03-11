@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white text-center py-3">
+                <h4 class="mb-0">🧾 Connexion</h4>
+                <small class="text-muted">Calcul TVA Restaurant</small>
+            </div>
+            <div class="card-body p-4">
+
+                {% if error %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle"></i> {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-envelope"></i> Email
+                        </label>
+                        <input type="email" name="_username" class="form-control"
+                               value="{{ last_username }}" placeholder="votre@email.com" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-lock"></i> Mot de passe
+                        </label>
+                        <input type="password" name="_password" class="form-control"
+                               placeholder="••••••••" required>
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+            <div class="card-footer text-center py-3">
+                <span class="text-muted">Pas encore de compte ?</span>
+                <a href="{{ path('app_register') }}" class="fw-bold text-decoration-none">
+                    Créer un compte
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
