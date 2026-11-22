@@ -56,6 +56,11 @@ class AchatController extends AbstractController
     #[Route('/{id}/delete', name: 'app_achat_delete', methods: ['POST'])]
     public function delete(Request $request, Achat $achat, EntityManagerInterface $em): Response
     {
+        // 🔒 Vérifie que l'achat appartient bien à l'utilisateur connecté
+        if ($achat->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
         if ($this->isCsrfTokenValid('delete'.$achat->getId(), $request->request->get('_token'))) {
             $em->remove($achat);
             $em->flush();

@@ -56,6 +56,11 @@ class RecetteController extends AbstractController
     #[Route('/{id}/delete', name: 'app_recette_delete', methods: ['POST'])]
     public function delete(Request $request, Recette $recette, EntityManagerInterface $em): Response
     {
+        // 🔒 Vérifie que la recette appartient bien à l'utilisateur connecté
+        if ($recette->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
         if ($this->isCsrfTokenValid('delete'.$recette->getId(), $request->request->get('_token'))) {
             $em->remove($recette);
             $em->flush();
